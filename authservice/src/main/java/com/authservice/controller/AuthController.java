@@ -1,5 +1,6 @@
 package com.authservice.controller;
 
+import com.authservice.dto.LoginDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,5 +28,11 @@ public class AuthController {
     public ResponseEntity<APIResponse<?>> registration(@RequestBody @Valid RegistrationRequestDto dto){
         APIResponse<?>response=service.register(dto);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<APIResponse<String>>login(@RequestBody LoginDto dto){
+       APIResponse<String>response= service.login(dto);
+       return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 }

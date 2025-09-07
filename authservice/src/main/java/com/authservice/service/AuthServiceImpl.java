@@ -1,6 +1,10 @@
 package com.authservice.service;
 
+import com.authservice.dto.LoginDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +25,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final AuthenticationManager authenticationManager;
 
 	@Override
     public APIResponse<?> register(RegistrationRequestDto dto) {
@@ -78,9 +83,21 @@ public class AuthServiceImpl implements AuthService {
 
 
 	@Override
-	public APIResponse<String> login(String username, String password) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public APIResponse<String> login(LoginDto dto ) {
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken=new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword());
+        try{
+            Authentication authentication=authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+            if(authentication.isAuthenticated()){
+                return new APIResponse<>(200, "Login Successful", "Welcome " + usernamePasswordAuthenticationToken.getName());
+            }
+
+        }catch(Exception e ){
+            e.printStackTrace();
+        }
+
+
+        return new APIResponse<>(404, "Login Unsuccessful", "Wrong User Credentials");
+
+    }
 
 }
