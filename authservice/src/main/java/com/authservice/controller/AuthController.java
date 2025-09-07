@@ -1,5 +1,6 @@
 package com.authservice.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,13 +16,12 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@RequiredArgsConstructor
 
 public class AuthController {
 
     private final AuthService service;
-    public AuthController(AuthService service) {
-    	this.service=service;
-    }
+
 
     @PostMapping("/register")
     public ResponseEntity<APIResponse<?>> registration(@RequestBody @Valid RegistrationRequestDto dto){

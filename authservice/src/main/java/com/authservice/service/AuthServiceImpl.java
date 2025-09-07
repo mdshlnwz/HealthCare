@@ -1,5 +1,6 @@
 package com.authservice.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -10,26 +11,16 @@ import com.authservice.entity.Role;
 import com.authservice.entity.User;
 import com.authservice.repository.RoleRepository;
 import com.authservice.repository.UserRepository;
-
+import org.springframework.web.bind.annotation.RequestMapping;
 
 
 @Service
-
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
-    
-    
-    
-    public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
-		this.userRepository = userRepository;
-		this.passwordEncoder = passwordEncoder;
-		this.roleRepository=roleRepository;
-	}
-
-
 
 	@Override
     public APIResponse<?> register(RegistrationRequestDto dto) {
