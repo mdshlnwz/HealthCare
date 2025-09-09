@@ -1,6 +1,7 @@
 package com.authservice.service;
 
 import com.authservice.dto.LoginDto;
+import com.authservice.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,6 +18,8 @@ import com.authservice.repository.RoleRepository;
 import com.authservice.repository.UserRepository;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +29,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
 	@Override
     public APIResponse<?> register(RegistrationRequestDto dto) {
@@ -52,8 +56,18 @@ public class AuthServiceImpl implements AuthService {
         
 
         // Assign Role
-        Role role = roleRepository.findByName("ROLE_PATIENT")
-                .orElseThrow(() -> new RuntimeException("Role not found in DB"));
+        Optional<Role> existingRole=roleRepository.findByName("ROLE_" + dto.getRole().getName());
+        Role role;
+        if (existingRole.isPresent()) {
+            role = existingRole.get(); // reuse existing role
+        } else {
+            role = new Role();
+            role.setName("ROLE_" + dto.getRole().getName());
+            role = roleRepository.save(role); // save new role
+        }
+
+
+
 
 
         // 3. Save user
@@ -88,7 +102,8 @@ public class AuthServiceImpl implements AuthService {
         try{
             Authentication authentication=authenticationManager.authenticate(usernamePasswordAuthenticationToken);
             if(authentication.isAuthenticated()){
-                return new APIResponse<>(200, "Login Successful", "Welcome " + usernamePasswordAuthenticationToken.getName());
+                String token=jwtService.generateToken(usernamePasswordAuthenticationToken.getName(), authentication.getAuthorities().iterator().next().getAuthority());
+                return new APIResponse<>(200, "Login Successful", token);
             }
 
         }catch(Exception e ){

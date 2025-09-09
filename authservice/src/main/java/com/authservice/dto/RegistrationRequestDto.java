@@ -1,5 +1,6 @@
 package com.authservice.dto;
 
+import com.authservice.entity.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -41,6 +42,8 @@ public class RegistrationRequestDto {
 
     @NotNull(message="Must be same as password")
     private String confirmPassword;
+
+    private Role role;
 
 
 
